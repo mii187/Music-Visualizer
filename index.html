@@ -213,19 +213,19 @@
 </head>
 <body>
   <h1>Music Visualizer</h1>
-  <!-- <input type="file" id="audioFile" accept="audio/mp3" /> -->
-  <!-- <label for="audioFile">SELECT MP3 FILE</label> -->
-  <!-- <div id="thumbnail" style="margin: 20px; color: #fff; font-size: 14px; display: none;"></div> -->
-  <!-- <div class="upload-progress-container" style="display: none;"> -->
-    <!-- <progress id="uploadProgressBar" value="0" max="100"></progress> -->
-    <!-- <div id="uploadStatus"></div> -->
-  <!-- </div> -->
+  <input type="file" id="audioFile" accept="audio/mp3" />
+  <label for="audioFile">SELECT MP3 FILE</label>
+  <div id="thumbnail" style="margin: 20px; color: #fff; font-size: 14px; display: none;"></div>
+  <div class="upload-progress-container" style="display: none;">
+    <progress id="uploadProgressBar" value="0" max="100"></progress>
+    <div id="uploadStatus"></div>
+  </div>
 
   <div class="visualizer-container">
     <canvas id="visualizer" width="800" height="400"></canvas>
-    <!-- <div class="progress-control"> -->
-      <!-- <input type="range" id="progressControl" min="0" max="100" value="0" step="1" /> -->
-    <!-- </div> -->
+    <div class="progress-control">
+      <input type="range" id="progressControl" min="0" max="100" value="0" step="1" />
+    </div>
   </div>
 
   <div class="controls">
