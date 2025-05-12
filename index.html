@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Music Visualizer</title>
+  <style>
+    body {
+      font-family: 'DotGothic16', 'Press Start 2P', cursive;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: #0f0f0f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .visualizer-container {
+      width: 90%; /* スマートフォン表示のために幅を調整 */
+      max-width: 800px; /* 最大幅は維持 */
+      margin: 20px auto; /* 上下のマージンを調整 */
+      position: relative;
+    }
+    canvas {
+      display: block;
+      width: 100%; /* 親要素に追従 */
+      height: auto; /* アスペクト比を維持しつつ高さを自動調整 */
+      background: #222;
+      border: 2px solid #444;
+      box-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 10px; /* .visualizer-containerの下に10pxのスペース */
+    }
+    input[type="file"] {
+      display: none;
+    }
+    label {
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0ff;
+    }
+    .volume-control {
+      margin: 20px auto;
+      width: 90%; /* スマートフォン表示のために幅を調整 */
+      max-width: 800px; /* 最大幅は維持 */
+    }
+    .progress-control {
+      position: absolute;
+      bottom: 2px; /* canvasの下枠の内側に配置 */
+      left: 0;
+      width: 100%; /* 親コンテナ(.visualizer-container)の幅に合わせる */
+      height: 4px; /* 太さを半分に */
+      margin: 0; /* position:absolute のため不要 */
+      /* background: transparent; トラック背景は透明に - これは #progressControl に直接適用 */
+      outline: none;
+      cursor: pointer;
+    }
+    #volumeControl {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, #001f3f, #0074D9, #7FDBFF);
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0ff;
+    }
+    #progressControl {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #555; /* トラック背景を灰色に */
+      height: 4px; /* 太さを半分に */
+      outline: none;
+      cursor: pointer;
+      /* display: none;  再生時に表示するためコメントアウトまたは削除 */
+      border-radius: 2px; /* トラック全体の角を丸める */
+    }
+    /* プログレストラックのスタイル (進捗部分) - CSSカスタムプロパティを使用 */
+    #progressControl {
+      --progress-track-color: #0ff; /* カラーバーと同じ色に */
+    }
+    #progressControl::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: transparent; /* Webkitではトラック自体は透明にし、thumbで色を表現 */
+      border-radius: 2px;
+    }
+    #progressControl::-moz-range-track {
+      width: 100%;
+      height: 4px;
+      cursor: pointer;
+      background: var(--progress-track-color); /* 動的な色を適用 */
+      border-radius: 2px;
+    }
+    /* Webkit用の進捗部分のスタイリング */
+    #progressControl::-webkit-progress-bar {
+      background-color: #555; /* トラック背景 */
+      border-radius: 2px;
+    }
+    #progressControl::-webkit-progress-value {
+      background-color: var(--progress-track-color); /* 進捗部分の色 */
+      border-radius: 2px;
+      box-shadow: 0 0 5px var(--progress-track-color); /* 光彩効果 */
+    }
+    /* Firefox用の進捗部分のスタイリング */
+    #progressControl::-moz-progress-bar {
+      background-color: var(--progress-track-color); /* 進捗部分の色 */
+      border-radius: 2px;
+      box-shadow: 0 0 5px var(--progress-track-color); /* 光彩効果 */
+    }
+
+    #volumeControl::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-top: -4px; /* トラックの中央に配置 */
+      box-shadow: 0 0 8px #0ff;
+    }
+    #progressControl::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 10px; /* 少し小さくして進捗バーに合わせる */
+      height: 10px; /* 少し小さくして進捗バーに合わせる */
+      background: var(--progress-track-color); /* カラーバーと同じ色 */
+      border-radius: 50%;
+      cursor: pointer;
+      margin-top: -3px; /* トラックの中央に配置 */
+      box-shadow: 0 0 8px var(--progress-track-color); /* 光彩効果 */
+    }
+    #progressControl::-moz-range-thumb {
+      width: 10px; /* 少し小さくして進捗バーに合わせる */
+      height: 10px; /* 少し小さくして進捗バーに合わせる */
+      background: var(--progress-track-color); /* カラーバーと同じ色 */
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px var(--progress-track-color); /* 光彩効果 */
+    }
+    h1 span {
+      font-family: 'Press Start 2P', cursive;
+    }
+    h1 {
+      /* font-size: 36px; */ /* 固定値を削除 */
+      font-weight: bold; /* 太くする */
+      width: 90%; /* .visualizer-container と同じ幅 */
+      max-width: 800px; /* .visualizer-container と同じ最大幅 */
+      margin-left: auto; /* 中央寄せ */
+      margin-right: auto; /* 中央寄せ */
+      margin-bottom: 10px; /* visualizer-containerとの間に少しスペース */
+      word-wrap: break-word; /* 幅を超える場合に折り返し */
+      overflow-wrap: break-word; /* 同上 */
+      /* ビューポート幅に基づいたフォントサイズはJavaScriptで制御するため削除 */
+      /* font-size: calc(20px + 2.5vw); */
+    }
+
+/* @media (min-width: 800px) { ... } もJavaScript側で制御するため削除可能だが、
+   JavaScriptが無効な場合のフォールバックとして残すことも検討できる。
+   今回はJavaScriptでの制御を優先するためコメントアウトまたは削除。 */
+/*
+@media (min-width: 800px) {
+      h1 {
+        font-size: 48px;
+      }
+    }
+*/
+    .upload-progress-container {
+      width: 200px; /* SELECT MP3 FILEボタンの幅に合わせる（おおよそ） */
+      margin: 10px auto;
+    }
+    #uploadProgressBar {
+      width: 100%;
+      height: 4px; /* 音量調節バーの半分 */
+      -webkit-appearance: none;
+      appearance: none;
+      background: #555;
+      border-radius: 2px;
+      outline: none;
+    }
+    #uploadProgressBar::-webkit-progress-bar {
+      background-color: #555;
+      border-radius: 2px;
+    }
+    #uploadProgressBar::-webkit-progress-value {
+      background-color: #0ff;
+      border-radius: 2px;
+      box-shadow: 0 0 5px #0ff;
+    }
+    #uploadStatus {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #0ff;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Music Visualizer</h1>
+  <input type="file" id="audioFile" accept="audio/mp3" />
+  <label for="audioFile">SELECT MP3 FILE</label>
+  <div id="thumbnail" style="margin: 20px; color: #fff; font-size: 14px; display: none;"></div>
+  <div class="upload-progress-container" style="display: none;">
+    <progress id="uploadProgressBar" value="0" max="100"></progress>
+    <div id="uploadStatus"></div>
+  </div>
+
+  <div class="visualizer-container">
+    <canvas id="visualizer" width="800" height="400"></canvas>
+    <div class="progress-control">
+      <input type="range" id="progressControl" min="0" max="100" value="0" step="1" />
+    </div>
+  </div>
+
+  <div class="controls">
+    <svg id="rewindButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
+      <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
+      <polygon points="55,30 30,50 55,70" fill="#0ff" filter="url(#glow)" />
+      <polygon points="75,30 50,50 75,70" fill="#0ff" filter="url(#glow)" />
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
+
+    <svg id="playButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
+      <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
+      <polygon points="40,30 75,50 40,70" fill="#0ff" filter="url(#glow)" />
+    </svg>
+
+    <svg id="stopButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer; display:none;">
+      <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
+      <rect x="35" y="30" width="10" height="40" fill="#0ff" filter="url(#glow)" />
+      <rect x="55" y="30" width="10" height="40" fill="#0ff" filter="url(#glow)" />
+    </svg>
+
+    <svg id="nextButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
+      <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
+      <polygon points="45,30 70,50 45,70" fill="#0ff" filter="url(#glow)" />
+      <polygon points="25,30 50,50 25,70" fill="#0ff" filter="url(#glow)" />
+    </svg>
+  </div>
+
+  <div class="volume-control">
+    <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5" />
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
