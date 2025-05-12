@@ -213,23 +213,23 @@
 </head>
 <body>
   <h1>Music Visualizer</h1>
-  <input type="file" id="audioFile" accept="audio/mp3" />
-  <label for="audioFile">SELECT MP3 FILE</label>
-  <div id="thumbnail" style="margin: 20px; color: #fff; font-size: 14px; display: none;"></div>
-  <div class="upload-progress-container" style="display: none;">
-    <progress id="uploadProgressBar" value="0" max="100"></progress>
-    <div id="uploadStatus"></div>
-  </div>
+  <!-- <input type="file" id="audioFile" accept="audio/mp3" /> -->
+  <!-- <label for="audioFile">SELECT MP3 FILE</label> -->
+  <!-- <div id="thumbnail" style="margin: 20px; color: #fff; font-size: 14px; display: none;"></div> -->
+  <!-- <div class="upload-progress-container" style="display: none;"> -->
+    <!-- <progress id="uploadProgressBar" value="0" max="100"></progress> -->
+    <!-- <div id="uploadStatus"></div> -->
+  <!-- </div> -->
 
   <div class="visualizer-container">
     <canvas id="visualizer" width="800" height="400"></canvas>
-    <div class="progress-control">
-      <input type="range" id="progressControl" min="0" max="100" value="0" step="1" />
-    </div>
+    <!-- <div class="progress-control"> -->
+      <!-- <input type="range" id="progressControl" min="0" max="100" value="0" step="1" /> -->
+    <!-- </div> -->
   </div>
 
   <div class="controls">
-    <svg id="rewindButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
+    <!-- <svg id="rewindButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
       <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
       <polygon points="55,30 30,50 55,70" fill="#0ff" filter="url(#glow)" />
       <polygon points="75,30 50,50 75,70" fill="#0ff" filter="url(#glow)" />
@@ -242,7 +242,7 @@
           </feMerge>
         </filter>
       </defs>
-    </svg>
+    </svg> -->
 
     <svg id="playButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
       <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
@@ -255,11 +255,11 @@
       <rect x="55" y="30" width="10" height="40" fill="#0ff" filter="url(#glow)" />
     </svg>
 
-    <svg id="nextButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
+    <!-- <svg id="nextButton" width="60" height="60" viewBox="0 0 100 100" style="cursor:pointer;">
       <circle cx="50" cy="50" r="45" fill="black" stroke="#0ff" stroke-width="4" />
       <polygon points="45,30 70,50 45,70" fill="#0ff" filter="url(#glow)" />
       <polygon points="25,30 50,50 25,70" fill="#0ff" filter="url(#glow)" />
-    </svg>
+    </svg> -->
   </div>
 
   <div class="volume-control">
